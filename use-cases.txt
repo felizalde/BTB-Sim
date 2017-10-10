@@ -1,0 +1,41 @@
+
+Caso de estudio: Bucle sencillo
+
+CODE:
+
+lf $t10, 0($t1)
+addf $t14, $t10, $t12
+sf $t14, 0($t1)
+add $t1, $t1, $t8
+beq $t1, $t2, -5
+
+SETTING:
+
+1 memoria flotante - ciclos 2
+1 op. flotante - ciclos 3
+1 op. entero - ciclos 2
+1 saltos - ciclos 1
+
+-------------------------------
+
+Caso de estudio: Bucles anidados
+
+CODE:
+
+lf $t20, 0($t1)
+addf $t21, $t20, $t12
+lf $t10, 0($t1)
+addf $t14, $t10, $t12
+sf $t14, 0($t1)
+add $t1, $t1, $t8
+beq $t1, $t2, -5
+beq $t2, $t2, -8
+
+
+SETTING:
+
+1 memoria flotante - ciclos 2
+1 op. flotante - ciclos 3
+1 op. entero - ciclos 2
+1 saltos - ciclos 1
+

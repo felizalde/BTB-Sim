@@ -1,0 +1,558 @@
+<html>
+    <head>
+        <title>ROB</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script data-main="js/app" src="js/require.js"></script>
+        <script src="js/app/jquery.js"></script>
+        <script src="js/libs/bootstrap/bootstrap.min.js"></script>
+        <link rel="stylesheet" media="screen" href="css/bootstrap.min.css" />
+        <style type="text/css" media="screen">
+
+
+        body {
+            margin: 10px;
+        }
+
+        #header {
+            background: #FFF;
+            z-index: 9;
+            border-bottom: 1px solid #CCC;
+        }
+
+        #title {
+          margin-top: 13px !important;
+        }
+
+        .section {
+            padding: 45px 0 0 0 !important;
+        }
+
+        #editor {
+          margin-top: 10px;
+          width: 100%;
+          min-height: 300px;
+          max-height: 300px;
+        }
+
+        #sigma-container {
+          width:  100%;
+          height:  400px;
+          border: 1px solid #CCC;
+        }
+
+        #tables-container {
+            width: auto;
+            overflow-x: auto;
+        }
+
+        #tables-container table {
+            display: table-cell;
+            width: auto;
+        }
+
+        .processor-table {
+            padding: 0 20px 0 0 !important;
+            border: none !important;
+        }
+
+        .glyphicon-padded {
+            top:5px !important;
+        }
+
+        .inline-title {
+            display: inline;
+        }
+
+        .right-aligned {
+            float: right;
+        }
+
+        .title-button {
+            margin: -3px 0 0 15px;
+        }
+
+        .scroll-1 {
+            min-height:auto;
+        }
+
+        .scroll-container {
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .btn-sm {
+          padding: 4px 4px;
+        }
+
+        .editor-panel {
+          border: 1px solid #CCC;
+          border-radius: 1.5px;
+          position: relative;
+        }
+
+        .configuration-pane {
+          border: 1px solid #CCC;
+          border-radius: 1.5px;
+          position: relative;
+        }
+
+        .configuration-pane .container-fluid {
+          padding: 10 10 10 10;
+        }
+
+        .editor-panel .container-fluid {
+          padding: 10 10 10 10;
+        }
+
+        .item-configuration {
+        }
+
+        dl {
+          margin-bottom: 0;
+          padding-left: 5px;
+        }
+
+        .depend-list {
+          padding-left: 0 !important;
+        }
+
+        .depend-list li {
+          border: 1px solid #CCC;
+          border-radius: 1.5px;
+          margin: 5 5 5 5;
+          padding: 10 10 10 10;
+        }
+
+        .red {
+          background-color: red;
+        }
+        </style>
+    </head>
+    <body>
+
+          <!-- MODAL -->
+          <div class="modal fade" tabindex="-1" role="dialog" id="acerca-de-modal">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Simulador ROB con predicción de saltos</h3>
+              </div>
+              <div class="modal-body">
+                  <p>Es una web app que pretende demostrar como los procesadores
+                  super escalares lidean con las instrucciones que finalizan fuera de orden, y como estos reducen ciclos
+                  de paradas aplicando técnicas de predicción de saltos.
+                  </p>
+                  <br />
+                  <p>
+                    La aplicación fue desarrollada cómo trabajo final de la materia <i><strong>Arquitectura de Computadoras
+                    y Técnicas Digitales.</strong></i>
+                  </p>
+
+                  <p>La aplicación fue llevada a cabo en dos etapas:</p>
+                  <ul>
+                    <li><u>Reorder Buffer (ROB):</u> Desarrollado por Tomás Juárez y Guillermo Pacheco.</li>
+                    <li><u>Predicción dinámica de Saltos:</u> Desarrollado Federico Elizalde y Matias Prado.</li>
+                  </ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+          <!-- HEADER -->
+          <nav class="navbar navbar-default navbar-fixed-top" id="header">
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+
+              </div>
+              <div class="navbar-collapse collapse" id="navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                  <li><div class="navbar-btn text-center"><a class="btn btn-default" href="#firstPage">Inicio</a></div></li>
+                  <li><div class="navbar-btn text-center"><a class="btn btn-default" href="#secondPage">Dependencias</a></div></li>
+                  <li><div class="navbar-btn text-center"><a class="btn btn-default" href="#thirdPage">Simulación</a></div></li>
+                  <li><div class="navbar-btn text-center"><a class="btn btn-default" href="#fourthPage">BTB</a></div></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                  <li><div class="navbar-btn text-center"><a class="btn btn-danger" target="_blank" href="http://arqui2.alumnos.exa.unicen.edu.ar/">Cátedra</a></div></li>
+                  <li><div class="navbar-btn text-center"><a class="btn btn-danger" href="#" data-toggle="modal" data-target="#acerca-de-modal">Acerca de</a></div></li>
+                </ul>
+                <h3 class="text-center" id="title">Simulador ROB con Predicción de Saltos</h3>
+              </div>
+            </div>
+          </nav>
+
+          <!-- CONTAINER -->
+          <div class="container-fluid" id="fullpage">
+
+              <!-- SETTING -->
+              <div class="section scroll-container">
+                <div class="scroll-1">
+                  <div class="row row-centered">
+                      <!-- EDITOR -->
+                      <div class="col-md-4">
+                        <div class="editor-panel">
+                          <div class="container-fluid">
+                            <h3 class="inline-title">Memoría de Instrucciones <span class="glyphicon glyphicon-padded glyphicon-edit"></span></h3>
+                            <button class="btn btn-sm btn-success right-aligned" id="init">Compilar</button>
+                            <pre id="editor"></pre>
+                            <h5></span> <strong><u>Juego de instrucciones</u></strong>
+                            </h5>
+                            <dl>
+                              <small>
+                              <dt>Ops aritmética de enteros:</dt>
+                              <dd><samp><code>{add | sub | mul | div}</code> $t0, $t1, $t2</samp></dd>
+                              <dt>Ops aritmética de punto flotante:</dt>
+                              <dd><samp><code>{addf | subf | mulf | divf}</code> $t0, $t1, $t2</samp></dd>
+                              <dt>Ops de memoria de enteros:</dt>
+                              <dd><samp><code>{lw | sw}</code> $t0, 80($t1)</samp></dd>
+                              <dt>Ops de memoria de punto flotante:</dt>
+                              <dd><samp><code>{lf | sf}</code> $t0, 4($t1)</samp></dd>
+                              <dt>Ops de salto condicional:</dt>
+                              <dd><samp><code>{beq | bneq}</code> $t0, $t1, 4</samp></dd>
+                              <dt>Ops de salto incondicional:</dt>
+                              <dd><samp><code>{jump}</code> 4 </samp></dd>
+                              </small>
+                            </dl>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- PANEL  -->
+                      <div class="col-md-4 col-centered">
+                        <div class="configuration-pane">
+                          <div class="container-fluid">
+                            <h3 class="inline-title">Configuración <span class="glyphicon glyphicon-padded glyphicon-cog"></span></h3>
+
+                            <div class="item-configuration">
+                              <h4>Dispatcher</h4>
+                              <ul>
+                                <li>
+                                  <p>Tamaño del dispatcher
+                                      <select id="dispatcherSize" class="btn btn-sm btn-default">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="8">8</option>
+                                            <option value="9">9</option>
+                                            <option value="10">10</option>
+                                      </select>
+                                  </p>
+                                </li>
+                              </ul>
+                            </div>
+                            <div class="item-configuration">
+                                <h4>Estación de reserva</h4>
+                                <ul>
+                                  <li>
+                                  <p>Tamaño de la estación de reserva
+                                        <select id="reservationStationSize" class="btn btn-sm btn-default">
+                                              <option value="1">1</option>
+                                              <option value="2">2</option>
+                                              <option value="3">3</option>
+                                              <option value="4">4</option>
+                                              <option value="5">5</option>
+                                              <option value="6">6</option>
+                                              <option value="7">7</option>
+                                              <option value="8">8</option>
+                                              <option value="9">9</option>
+                                              <option value="10">10</option>
+                                        </select>
+                                    </p>
+                                  </li>
+                                </ul>
+                            </div>
+
+                            <div class="item-configuration">
+                              <h4>Unidades funcionales</h4>
+                              <ul>
+                                  <li>
+                                      <p>Propósito general</p>
+                                      <p>
+                                          <span>Cantidad:</span>
+                                          <select id="multi_type" class="btn btn-sm btn-default">
+                                                <option value="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                          </select>
+                                          <span>Ciclos:</span>
+                                          <select id="multi_type_cycles" class="btn btn-sm btn-default">
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                          </select>
+                                      </p>
+                                  </li>
+                                  <li>
+                                      <p>Aritmética de enteros</p>
+                                      <p>
+                                          <span>Cantidad:</span>
+                                          <select id="arith_int" class="btn btn-sm btn-default">
+                                              <option value="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                          </select>
+                                          <span>Ciclos:</span>
+                                          <select id="arith_int_cycles" class="btn btn-sm btn-default">
+                                                <option value="1">1</option>
+                                                <option selected value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                          </select>
+                                      </p>
+                                  </li>
+                                  <li>
+                                      <p>Aritmética de punto flotante</p>
+                                      <p>
+                                          <span>Cantidad:</span>
+                                          <select id="arith_float" class="btn btn-sm btn-default">
+                                              <option value="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                          </select>
+                                          <span>Ciclos:</span>
+                                          <select id="arith_float_cycles" class="btn btn-sm btn-default">
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option selected value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                          </select>
+                                      </p>
+                                  </li>
+
+                                  <li>
+                                      <p>Acceso a memoria para enteros</p>
+                                      <p>
+                                          <span>Cantidad:</span>
+                                          <select id="mem_int" class="btn btn-sm btn-default">
+                                              <option value="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                          </select>
+                                          <span>Ciclos:</span>
+                                          <select id="mem_int_cycles" class="btn btn-sm btn-default">
+                                                <option selected value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                          </select>
+                                      </p>
+                                  </li>
+                                  <li>
+                                      <p> De acceso a memoria de punto flotante</p>
+                                      <p>
+                                          <span>Cantidad:</span>
+                                          <select id="mem_float" class="btn btn-sm btn-default">
+                                              <option value="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                          </select>
+                                          <span>Ciclos:</span>
+                                          <select id="mem_float_cycles" class="btn btn-sm btn-default">
+                                                <option value="1">1</option>
+                                                <option selected value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                          </select>
+                                      </p>
+                                  </li>
+                                  <li>
+                                      <p> Saltos condicionales</p>
+                                      <p>
+                                          <span>Cantidad:</span>
+                                          <select id="beq_type" class="btn btn-sm btn-default">
+                                              <option value="0">0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                          </select>
+                                          <span>Ciclos:</span>
+                                          <select id="beq_type_cycles" class="btn btn-sm btn-default">
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                          </select>
+                                      </p>
+                                  </li>
+
+                              </ul>
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4">
+                        <div class="configuration-pane">
+                          <div class="container-fluid">
+                          <h3 class="inline-title">Configuración de Saltos<span class="glyphicon glyphicon-padded glyphicon-cog"></span></h3>
+
+                          <div class="item-configuration">
+                            <h4>Tamaño del predictor:</h4>
+                            <ul>
+                              <li>
+                                <select id="sizePredictor" class="btn btn-sm btn-default">
+                                    <option selected value="0">0</option>
+                                      <option value="1">1</option>
+                                      <option value="2">2</option>
+                                </select>
+                              </li>
+                            </ul>
+                          </div>
+
+                          <div class="item-configuration">
+                              <h4>Cantidad de veces condición verdadera:</h4>
+                              <ul id="branchs">
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="configuration-pane">
+                          <div class="container-fluid">
+                            <h4 class="text-center"> Guardar Configuraciones</h4>
+                            <div><button class="btn btn-block btn-success" id="saveSettings">Guardar</button></div>
+                          </div>
+                        </div>
+                      </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <!-- DEPENDENCIAS -->
+              <div class="section scroll-container" >
+                  <div class="scroll-1">
+                      <div class="main-content">
+                          <div class="row row-centered">
+                              <!-- GRAFO -->
+                              <div class="col-md-4 col-centered" id="dependency-graph-background">
+                                  <h3>Grafo de dependencias</h3>
+                                  <div id="sg">
+                                      <div class="alert alert-info" role="alert">Para visualizar el grafo de dependencias, primero debes <strong>introducir las instrucciones</strong></div>
+                                  </div>
+                              </div>
+                              <!-- CLAVES -->
+                              <div class="col-md-4 col-centered" id="keys">
+                                  <h3>Claves</h3>
+                                  <strong>
+                                  <ul class="list-unstyled depend-list" id="keys-list">
+                                  </ul>
+                                </strong>
+                              </div>
+                              <!-- DEPENDENCIAS -->
+                              <div class="col-md-4 col-centered" id="dependencies">
+                                  <h3>Dependencias detectadas</h3>
+                                  <ul class="list-unstyled depend-list" id="dependencies-list"></ul>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- SIMULACION -->
+                <div class="section scroll-container" >
+                  <div class="scroll-1">
+
+                      <h3 class="inline-title">Simulación</h3>
+                      <button id="nextCycle" class="btn btn-default"><span class="glyphicon glyphicon-play" aria-hidden="true" ></span></button>
+
+
+                      <div class="alert alert-info" role="alert" id="non-tables">Para visualizar la ejecución de las instrucciones primero debes ingresarlas.</div>
+
+                      <div id="tables-container">
+                          <!--tabla 1-->
+                          <table class="table table-bordered processor-table" id="cycle-counter-table">
+                              <tbody></tbody>
+                          </table>
+
+                          <table class="table table-bordered processor-table" id="dispatcher-table">
+                              <tbody></tbody>
+                          </table>
+
+                          <!--tabla 2-->
+                          <table class="table table-bordered processor-table" id="reserv-stations-table">
+                              <tbody></tbody>
+                          </table>
+
+                          <!--tabla 3-->
+                          <table class="table table-bordered processor-table" id="functional-unities-table">
+                              <tbody></tbody>
+                          </table>
+
+                          <!--ROB-->
+                          <table class="table table-bordered processor-table" id="rob-table">
+                              <tbody></tbody>
+                          </table>
+
+                      </div>
+                  </div>
+                </div>
+
+              <!-- BTB -->
+              <div class="section scroll-container" id="last">
+                <div class="scroll-1">
+                      <h3 class="inline-title">BTB</h3>
+
+                      <div class="alert alert-info" role="alert" id="non-tables">Para visualizar la BTB primero debes ingresar código con instrucciones de salto.</div>
+
+                      <table class="table table-bordered processor-table" id="btb-table">
+                          <tbody>
+                          </tbody>
+                      </table>
+                </div>
+              </div>
+          </div>
+
+        </div>
+    </body>
+</html>
